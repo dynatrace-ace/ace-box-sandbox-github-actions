@@ -1,0 +1,3 @@
+---
+sonarqube_namespace: sonarqube
+sonarqube_admin_password: dynatrace
