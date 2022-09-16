@@ -48,6 +48,14 @@
     - { key: 'INGRESS_DOMAIN', value: '{{ ingress_domain }}' }
     - { key: 'KUBECONFIG_B64', value: '{{ subst_kubeconfig_b64 }}' }
 
+- include_role:
+    name: app-simplenode
+  vars:
+    repo_name: "{{ github_repo_name }}"
+    git_org_name: "{{ extra_vars.github_org  }}"
+    git_remote: "github"
+    git_endpoint: "https://{{ extra_vars.github_user }}:{{ extra_vars.github_token }}@github.com/{{ extra_vars.github_org }}/{{ github_repo_name }}.git"
+
 # Include use case specific Dashboard values
 - set_fact:
     include_dashboard_value_file: "{{ role_path }}/templates/sonarqube-dashboard.yml.j2"
