@@ -1,0 +1,20 @@
+---
+- name: Create Github repository
+  uri:
+    url: "https://api.github.com/orgs/{{ extra_vars.github_org }}/repos"
+    method: POST
+    status_code: [200, 201, 204]
+    return_content: yes
+    headers:
+      Accept: "application/vnd.github+json"
+      Authorization: "Bearer {{ extra_vars.github_token }}"
+    body_format: json
+    body:
+      name: "{{ github_repo_name }}"
+      description: "ACE-Box sandbox for Github Actions"
+      homepage: "https://github.com"
+      private: true
+      has_issues: false
+      has_projects: false
+      has_wiki: false
+  ignore_errors: true

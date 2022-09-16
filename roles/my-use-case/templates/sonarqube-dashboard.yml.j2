@@ -1,0 +1,12 @@
+---
+extRefs:
+  Sonarqube:
+    url: "{{ ingress_protocol }}://sonarqube.{{ ingress_domain }}"
+    description: "Sonarqube is deployed and availabe at {{ ingress_protocol }}://sonarqube.{{ ingress_domain }}"
+    creds:
+    - description: Username
+      type: text
+      value: "admin"
+    - description: Password
+      type: password
+      value: "dynatrace"

@@ -1,3 +1,68 @@
 ---
-- debug:
-    msg: "Hello from your external use case!"
+- include_role:
+    name: microk8s
+
+- include_role:
+    name: sonarqube
+
+# Ensure uniqueness be adding unique host_group
+- set_fact:
+    github_repo_name: "{{ extra_vars.github_repo_prefix }}-{{ host_group }}"
+
+- include_role:
+    name: github
+    tasks_from: ensure-repo
+
+# Install encryption lib required for secret generation
+- name: Install pynacl python package
+  become: true
+  become_user: root
+  ansible.builtin.pip:
+    name: pynacl
+
+# Get Kubeconfig and substitute server
+- name: Get Kubeconfig
+  command: "kubectl config view -o json --flatten"
+  register: kubeconfig_raw
+
+- name: Get internal server
+  command: "kubectl config view -o jsonpath='{.clusters[0].cluster.server}'"
+  register: current_k8s_server_raw
+
+- set_fact:
+    ext_server: "https://{{ host_ip }}:16443"
+
+- set_fact:
+    subst_kubeconfig_b64: "{{ kubeconfig_raw.stdout | replace(current_k8s_server_raw.stdout, ext_server) | b64encode }}"
+
+- include_role:
+    name: github
+    tasks_from: ensure-repo-secret
+  vars:
+    github_secret_key: "{{ item.key }}"
+    github_secret_value: "{{ item.value }}"
+  loop:
+    - { key: 'DT_TENANT_URL', value: '{{ dynatrace_tenant_url }}' }
+    - { key: 'DT_API_TOKEN', value: '{{ dynatrace_api_token }}' }
+    - { key: 'INGRESS_PROTOCOL', value: '{{ ingress_protocol }}' }
+    - { key: 'INGRESS_DOMAIN', value: '{{ ingress_domain }}' }
+    - { key: 'KUBECONFIG_B64', value: '{{ subst_kubeconfig_b64 }}' }
+
+- include_role:
+    name: app-simplenode
+  vars:
+    repo_name: "{{ github_repo_name }}"
+    git_org_name: "{{ extra_vars.github_org  }}"
+    git_remote: "github"
+    git_endpoint: "https://{{ extra_vars.github_user }}:{{ extra_vars.github_token }}@github.com/{{ extra_vars.github_org }}/{{ github_repo_name }}.git"
+
+# Include use case specific Dashboard values
+- set_fact:
+    include_dashboard_value_file: "{{ role_path }}/templates/sonarqube-dashboard.yml.j2"
+
+- include_role:
+    name: dashboard
+    tasks_from: template-values-file
+
+- include_role:
+    name: dashboard
