@@ -46,8 +46,6 @@
     - { key: 'DT_API_TOKEN', value: '{{ dynatrace_api_token }}' }
     - { key: 'INGRESS_PROTOCOL', value: '{{ ingress_protocol }}' }
     - { key: 'INGRESS_DOMAIN', value: '{{ ingress_domain }}' }
-    - { key: 'KEPTN_API_TOKEN', value: '{{ ca_api_token | default(None) }}' }
-    - { key: 'KEPTN_ENDPOINT', value: '{{ ca_endpoint | default(None) | replace("/api","") }}' }
     - { key: 'KUBECONFIG_B64', value: '{{ subst_kubeconfig_b64 }}' }
 
 # Include use case specific Dashboard values
