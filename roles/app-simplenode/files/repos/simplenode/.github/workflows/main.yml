@@ -1,10 +1,14 @@
 name: CI
 
 on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
-  deploy:
+  verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -13,3 +17,18 @@ jobs:
           KUBE_CONFIG: ${{ secrets.KUBECONFIG_B64 }}
         with:
           args: get ns
+  deploy:
+    runs-on: ubuntu-latest
+    container: dtzar/helm-kubectl
+    needs: verify
+    steps:
+      - uses: timheuer/base64-to-file@v1.1
+        with:
+          fileName: 'config'
+          fileDir: '/github/home/.kube/'
+          encodedString: ${{ secrets.KUBECONFIG_B64 }}
+      - env:
+          INGRESS_PROTOCOL: ${{ secrets.INGRESS_PROTOCOL }}
+          INGRESS_DOMAIN: ${{ secrets.INGRESS_DOMAIN }}
+        run: >
+          helm list -A
