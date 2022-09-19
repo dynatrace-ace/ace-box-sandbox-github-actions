@@ -22,6 +22,16 @@ Check out [ace-box documentation](https://github.com/Dynatrace/ace-box/blob/dev/
 use_case="https://github.com/dynatrace-ace/ace-box-sandbox-github-actions.git"
 ```
 
+In addition, the following extra vars need to be provided:
+```
+extra_vars = {
+  github_user        = "" # Github user name that has permissions to create repos in specified organization
+  github_token       = "" # Github password
+  github_org         = "" # Github organisation repositories will be created in
+  github_repo_prefix = "" # string all repositories will be prefixed with
+}
+```
+
 ## References
 
 - https://github.com/SonarSource/helm-chart-sonarqube
