@@ -3,6 +3,9 @@
     name: microk8s
 
 - include_role:
+    name: dt-oneagent
+
+- include_role:
     name: sonarqube
 
 # Ensure uniqueness be adding unique host_group
