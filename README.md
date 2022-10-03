@@ -9,9 +9,7 @@ The following components get deployed:
 - microk8s
 - Dynatrace Operator with OneAgent and Kubernetes ActiveGates
 - Dynatrace CloudAutomation (Keptn)
-- Dynatrace Monaco CLI
 - Sonarqube
-- Monitoring as Code configuration is applied
 - Dashboard with predefined links
 
 ## Running the sandbox

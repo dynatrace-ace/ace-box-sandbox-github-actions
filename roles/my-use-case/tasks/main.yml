@@ -3,6 +3,9 @@
     name: microk8s
 
 - include_role:
+    name: keptn
+
+- include_role:
     name: dt-oneagent
 
 - include_role:
@@ -22,6 +25,15 @@
   become_user: root
   ansible.builtin.pip:
     name: pynacl
+
+# Retrieve Keptn credentials
+- include_role:
+    name: keptn
+    tasks_from: source-endpoints
+
+- include_role:
+    name: keptn
+    tasks_from: source-secret
 
 # Get Kubeconfig and substitute server
 - name: Get Kubeconfig
@@ -49,6 +61,8 @@
     - { key: 'DT_API_TOKEN', value: '{{ dynatrace_api_token }}' }
     - { key: 'INGRESS_PROTOCOL', value: '{{ ingress_protocol }}' }
     - { key: 'INGRESS_DOMAIN', value: '{{ ingress_domain }}' }
+    - { key: 'KEPTN_ENDPOINT', value: '{{ keptn_endpoint | replace("/api","") }}' }
+    - { key: 'KEPTN_API_TOKEN', value: '{{ keptn_api_token }}' }
     - { key: 'KUBECONFIG_B64', value: '{{ subst_kubeconfig_b64 }}' }
 
 - include_role:
